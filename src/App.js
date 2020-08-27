@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import api from './services/api';
 
 import "./styles.css";
 
 function App() {
+  const [repositories, setRepositories] = useState([]);
+
+  useEffect(() => {
+    api.get('repositories').then(response => {
+      setRepositories(response.data);
+    });
+  }, []);
+
   async function handleAddRepository() {
-    // TODO
+
+    const response = await api.post('repositories', {
+      title: "Teste Node.js",
+      url: "http://github.com/...",
+      techs: ["Node.js", "..."]
+    });
+
+    const repositor = response.data;
+
+    setRepositories([...repositories, repositor]);
   }
 
   async function handleRemoveRepository(id) {
@@ -15,7 +33,7 @@ function App() {
     <div>
       <ul data-testid="repository-list">
         <li>
-          Repositório 1
+          {repositories.map(repositor => <li key={repositor.id}>{repositor.title}</li>)}
 
           <button onClick={() => handleRemoveRepository(1)}>
             Remover
